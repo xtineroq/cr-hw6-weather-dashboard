@@ -1,0 +1,32 @@
+body {
+    font-family: 'Roboto', 'Open Sans', sans-serif;
+}
+
+main {
+    font-size: 16px;
+}
+
+.searchBar {
+    align-items: center;
+    padding: 20px;
+    height: 100%; 
+}
+
+#searchBtn {
+    background-color: #2b5555;
+}
+
+.twContainer {
+    padding-top: 15px;
+}
+
+.forecastContainer {
+    margin-top: 15px;
+}
+
+.card {
+    background-color: #2b5555;
+    color: white;
+    margin-right: 2px;
+    margin-top: 2px;
+}
