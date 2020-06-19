@@ -13,39 +13,39 @@ $(document).ready(function() {
             //get the last city searched so we can display it
             userLocation = savedCities[savedCities.length - 1];
             showPrevious();
-            getCurrentCity(L);
+            askLocation(userLocation);
         }
         else {
             //try to geolocate, otherwise set city to melbourne
             if (!navigator.geolocation) {
                 //can't geolocate and no previous searches, show default
-                getCurrentCity("Melbourne");
+                askLocation("Melbourne");
             }
             else {
-                // navigator.geolocation.getCurrentCity(success, error);
+                navigator.geolocation.getCurrentPosition(success, error);
             }
         }
     }
 
-    // function success(position) {
-    //     var lat = position.coords.latitude;
-    //     var lon = position.coords.longitude;
-    //     var queryURL = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + APIKey;
-    //     $.ajax({
-    //         url: queryURL,
-    //         method: "GET"
-    //     }).then(function (response) {
-    //         userLocation = response.name;
-    //         saveLoc(response.name);
-    //         getCurrentCity(userLocation);
-    //     });
-    // }
+    function success(position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + APIKey;
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function(response) {
+            userLocation = response.name;
+            saveLoc(response.name);
+            askLocation(userLocation);
+        });
+    }
     
-    // function error(){
-    //     //can't geolocate and no previous searches, so just give them one
-    //     userLocation = "Melbourne"
-    //     getCurrentCity(userLocation);
-    // }
+    function error(){
+        //can't geolocate and no previous searches, so just give them one
+        userLocation = "Melbourne"
+        askLocation(userLocation);
+    }
 
     //render buttons for each element in cities array as a search history for user
     function showPrevious() {
@@ -56,51 +56,52 @@ $(document).ready(function() {
             for (var i = 0; i < savedCities.length; i++) {
                 var citiesBtn = $("<button>").attr("class", "citiesList");
                 citiesBtn.text(savedCities[i]);
-                // if (savedCities[i] == L){
-                //     locBtn.attr("class", "list-group-item list-group-item-action active");
-                // }
-                // else {
-                //     locBtn.attr("class", "list-group-item list-group-item-action");
-                // }
+                if (savedCities[i] == userLocation){
+                    locBtn.attr("class", "list-group-item list-group-item-action active");
+                }
+                else {
+                    locBtn.attr("class", "list-group-item list-group-item-action");
+                }
                 citiesBtn.prepend(locBtn);
             }
             $("#searchedCities").append(citiesBtn);
         }
     }
 
-    function getCurrentCity(city) {
-        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey;
+    function askLocation(city) {
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey + "&units=metric";
 
         $.ajax({
             url: queryURL,
             method: "GET",
-            // error: function() {
-            //     savedCities.splice(savedCities.indexOf(city), 1);
-            //     localStorage.setItem("cities", JSON.stringify(savedCities));
-            //     initialize();
-            // }
+            error: function() {
+                savedCities.splice(savedCities.indexOf(city), 1);
+                localStorage.setItem("cities", JSON.stringify(savedCities));
+                initialize();
+            }
 
         }).then(function(response) {
+            console.log(response);
 
             // get icon for weather conditions
             var iconURL = "https://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png";
             $("#todayIcon").attr("src", iconURL);
 
             // display city name
-            $("#cityName").text("Today's Weather in " + (response.name));
+            $("#cityName").text("Today's Weather in " + response.name + ", " + response.sys.country);
 
             // display last updated
             var lastUpdated = moment(response.dt, "X").format("dddd, MMMM Do YYYY, h:mm a");
             $("#dateUpdated").attr("class", "text-muted").text("Last updated: " + lastUpdated);
 
             //display Temperature
-            $("#todayTemp").text("Temperature: " + response.main.temp + " &#8457;");
+            $("#todayTemp").text("Temperature: " + response.main.temp +  " °C");
 
             //display Humidity
             $("#todayHumidity").text("Humidity: " + response.main.humidity + "%");
 
             //display Wind Speed
-            $("#todayWindSpeed").text("Wind Speed: " + response.wind.speed + " MPH");
+            $("#todayWindSpeed").text("Wind Speed: " + response.wind.speed + " m/s");
 
             //coloured UV Index
             var uvIndexURL = "https://api.openweathermap.org/data/2.5/uvi?appid=" + APIKey + "&lat=" + response.coord.lat + "&lon=" + response.coord.lat;
@@ -131,7 +132,7 @@ $(document).ready(function() {
     //get five day forecast
     function fiveDayFC(city) {
 
-        var queryURL = "https://api.openweathermap.org/data/2.5/forecast?id=" + city + "&appid=" + APIKey + "&units=imperial";
+        var queryURL = "https://api.openweathermap.org/data/2.5/forecast?id=" + city + "&appid=" + APIKey + "&units=metric";
         $.ajax({
             url: queryURL,
             method: "GET"
@@ -154,7 +155,7 @@ $(document).ready(function() {
                     var cardImage = $("<img>").attr("class", "card-img-top").attr("src", "https://openweathermap.org/img/wn/" + response.list[i].weather[0].icon + "@2x.png");
                     var cardText = $("<div>").attr("class", "card-body");
     
-                    cardText.append($("<p>").attr("class", "card-text").text("Temp: " + response.list[i].main.temp + "&#8457;"));
+                    cardText.append($("<p>").attr("class", "card-text").text("Temp: " + response.list[i].main.temp + " °C"));
                     cardText.append($("<p>").attr("class", "card-text").text("Humidity: " + response.list[i].main.humidity + "%"));
 
                     forecastCard.append(cardTitle, cardImage, cardText);
@@ -181,7 +182,7 @@ $(document).ready(function() {
         showPrevious();
     }
     
-    $("#searchBtn").on("click", function (e) {
+    $("#searchBtn").on("click", function(e) {
         e.preventDefault();
 
         //get the value from the Search field
@@ -198,15 +199,15 @@ $(document).ready(function() {
             //clear the search field value
             $("#searchInput").val("");
             //get the new forecast
-            getCurrentCity(userInput);
+            askLocation(userInput);
         }
     });
     
-    $(document).on("click", ".citiesList", function () {
+    $(document).on("click", ".citiesList", function() {
         clearForecast();
         userLocation = $(this).text();
         showPrevious();
-        getCurrentCity(userLocation);
+        askLocation(userLocation);
     });
     
     initialize();
