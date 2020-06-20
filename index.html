@@ -26,18 +26,18 @@
     </header>
     
     <main>
-        <div class="container-fluid row">
+        <div class="row">
 
             <div class="col-3 col-md-3 searchBar">
-                <p>Search by City</p>
-                <div class="input-group mb-3">
-                        <input class="searchField" id="searchInput"type="text" class="form-control" placeholder="e.g. melbourne, au" aria-label="Search">
+                <p class="pl-3">Search by City</p>
+                <div class="pl-3 input-group mb-3">
+                        <input class="searchField" id="searchInput" type="text" placeholder="e.g. melbourne, au" aria-label="Search">
                         <div class="input-group-append">
                             <button id="searchBtn" class="btn btn-outline-light" type="button"><i class="fas fa-search"></i></button>
                         </div>
                 </div>
     
-                <p>Previously searched cities:</p>
+                <p class="pl-3">Previously searched cities:</p>
                 <div class="citiesContainer col-12 col-md-12 my-3" id="searchedCities"></div>
                 <!-- Buttons for saved searches here -->
             </div>
@@ -46,14 +46,13 @@
             <div class="twContainer col-9 col-md-9">
 
                 <section>
-                    <div class="bg-light" id="todayWeather">
-                        <h2 id="cityName"></h2>
+                    <div class="twTop" id="todayWeather">
+                        <h2 class="ml-4 pt-4" id="cityName"></h2>
                         <div class="row no-gutters">
-                            <div class="col-3 col-md-3">
+                            <div class="col-3 col-md-3 align-center">
                                 <img id="todayIcon" src="">
                             </div>
                             <div class="col-9 col-md-9">
-                                <p id="dateUpdated"></p>
                                 <p id="todayTemp"></p>
                                 <p id="todayHumidity"></p>
                                 <p id="todayWindSpeed"></p>
@@ -64,8 +63,8 @@
                 </section>
                 
                 <article>
-                    <div class="forecastContainer bg-light col-12 col-md-12">
-                        <div class="bg-light" id="wForecast">
+                    <div class="col-12 col-md-12 forecastContainer">
+                        <div id="wForecast">
                             <!-- Five day weather forecast cards here-->
                         </div>
                     </div>
