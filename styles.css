@@ -27,10 +27,13 @@ main {
 
 .listBtn {
     background-color: #2b5555;
-    padding: 3px, 3px;
     color: white;
     border-radius: 3px;
     text-transform: uppercase;
+    width: 60%;
+    margin-bottom: 3px;
+    margin-left: 20%;
+    margin-right: 20%;
 }
 
 .listBtn:hover {

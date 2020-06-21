@@ -24,7 +24,7 @@ $(document).ready(function() {
         else {
             //if can't geolocate, show default
             if (!navigator.geolocation) {
-                getCurrent("Melbourne");
+                getCurrent("Melbourne, AU");
             }
             else {
                 navigator.geolocation.getCurrentPosition(success, error);
@@ -48,14 +48,14 @@ $(document).ready(function() {
             method: "GET"
         }).then(function(response) {
             userLocation = response.name;
-            saveLocation(response.name);
+            renderButtons(response.name);
             getCurrent(userLocation);
         });
     }
     
     //if can't geolocate and no previous searches, show default
     function error() {
-        userLocation = "Melbourne"
+        userLocation = "Melbourne, AU"
         getCurrent(userLocation);
     }
 
@@ -68,10 +68,10 @@ $(document).ready(function() {
             for (var i = 0; i < newSavedCities.length; i++) {
                 var citiesBtn = $("<button>").attr("class", "listBtn");
                 citiesBtn.text(newSavedCities[i]);
+                $("#searchedCities").prepend(citiesBtn);
+                cityBtnClick();
             }
-            $("#searchedCities").append(citiesBtn);
         }
-        cityBtnClick();
     }
 
     // Call API
@@ -168,7 +168,7 @@ $(document).ready(function() {
     
     // on click function for search history buttons
     function cityBtnClick() {
-        $(".listBtn").on("click", function(){
+        $(".listBtn").on("click", function() {
             clearForecast();
             userLocation = $(this).text();
             getCurrent(userLocation);
@@ -194,11 +194,11 @@ $(document).ready(function() {
                 renderButtons();
             }
 
-            if(savedCities.length > 10){
+            if(savedCities.length > 9){
                 savedCities.shift();
             }
         });
     }
     
-
+    
 });
