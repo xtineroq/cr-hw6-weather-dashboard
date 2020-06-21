@@ -6,27 +6,23 @@ $(document).ready(function() {
 
     // Call Functions
     initialize();
-    renderButtons();
-    cityBtnClick();
     searchClick();
 
 
     //pull saved cities from local storage
     function initialize() {
-        var savedCities = JSON.parse(localStorage.getItem("cities"));
+        savedCities = JSON.parse(localStorage.getItem("cities"));
 
-        if (savedCities !== null) {
+        if (savedCities) {
             //get the last city searched and display it
-            userLocation = savedCities;
-            renderButtons();
+            userLocation = savedCities[savedCities.length - 1];
             getCurrent(userLocation);
-        }
-        else {
+            renderButtons();
+        } else {
             //if can't geolocate, show default
             if (!navigator.geolocation) {
                 getCurrent("Melbourne, AU");
-            }
-            else {
+            } else {
                 navigator.geolocation.getCurrentPosition(success, error);
             }
         }
@@ -34,9 +30,9 @@ $(document).ready(function() {
 
     //sets localStorage item to savedCities array 
     function storeCities() {
-        localStorage.setItem("cities", JSON.stringify(savedCities)); 
+        localStorage.setItem("cities", JSON.stringify(savedCities));
+        renderButtons();
     }
-
 
     // successful geolocation
     function success(position) {
@@ -48,7 +44,7 @@ $(document).ready(function() {
             method: "GET"
         }).then(function(response) {
             userLocation = response.name;
-            renderButtons(response.name);
+            storeCities(response.name);
             getCurrent(userLocation);
         });
     }
@@ -61,16 +57,14 @@ $(document).ready(function() {
 
     //render buttons for each element in cities array as a search history for user
     function renderButtons() {
-
         if (savedCities) {
             $("#searchedCities").empty();
-            var newSavedCities = [...new Set(savedCities)];
-            for (var i = 0; i < newSavedCities.length; i++) {
+            for (var i = 0; i < savedCities.length; i++) {
                 var citiesBtn = $("<button>").attr("class", "listBtn");
-                citiesBtn.text(newSavedCities[i]);
+                citiesBtn.text(savedCities[i]);
                 $("#searchedCities").prepend(citiesBtn);
-                cityBtnClick();
             }
+            cityBtnClick();
         }
     }
 
@@ -83,25 +77,28 @@ $(document).ready(function() {
             method: "GET"
 
         }).then(function(response) {
-            console.log(response);
 
             // fetch icon for Today's Weather
             var iconURL = "https://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png";
             $("#todayIcon").attr("src", iconURL);
 
-            // display city name
+            // display City name
             $("#cityName").text("Today's Weather in " + response.name + ", " + response.sys.country);
 
-            //display Temperature
+            // display Current Date
+            var todayDate = moment(response.dt, "X").format("dddd, DD MMMM YYYY");
+            $("#todayDate").attr("class", "text-muted").text("Date: " + todayDate);
+
+            // display Temperature
             $("#todayTemp").text("Temperature: " + response.main.temp +  " °C");
 
-            //display Humidity
+            // display Humidity
             $("#todayHumidity").text("Humidity: " + response.main.humidity + "%");
 
-            //display Wind Speed
+            // display Wind Speed
             $("#todayWindSpeed").text("Wind Speed: " + response.wind.speed + " m/s");
 
-            //add colour to UV Index
+            // add colour to UV Index
             var uvIndexURL = "https://api.openweathermap.org/data/2.5/uvi?appid=" + APIKey + "&lat=" + response.coord.lat + "&lon=" + response.coord.lat;
             $.ajax({
                 url: uvIndexURL,
@@ -111,9 +108,9 @@ $(document).ready(function() {
                 var bgColour;
                 if (UVI <= 3) {
                     bgColour = "green";
-                } else if (UVI >= 3 || UVI <= 6) {
+                } else if (UVI > 3 || UVI <= 6) {
                     bgColour = "yellow";
-                } else if (UVI >= 6 || UVI <= 8) {
+                } else if (UVI > 6 || UVI <= 8) {
                     bgColour = "orange";
                 } else {
                     bgColour = "red";
@@ -148,7 +145,7 @@ $(document).ready(function() {
                     var forecastCard = $("<div>").attr("class", "card");
                     cardColumn.append(forecastCard);
     
-                    var cardTitle = $("<p>").attr("class", "card-header").text(moment(response.list[i].dt, "X").format("MMM Do"));
+                    var cardTitle = $("<p>").attr("class", "card-header").text(moment(response.list[i].dt, "X").format("DD MMM YYYY"));
                     var cardImage = $("<img>").attr("class", "card-img-top").attr("src", "https://openweathermap.org/img/wn/" + response.list[i].weather[0].icon + "@2x.png");
                     var cardText = $("<div>").attr("class", "card-body");
     
@@ -170,9 +167,9 @@ $(document).ready(function() {
     function cityBtnClick() {
         $(".listBtn").on("click", function() {
             clearForecast();
+
             userLocation = $(this).text();
             getCurrent(userLocation);
-            renderButtons();
         });
     }
 
@@ -191,14 +188,16 @@ $(document).ready(function() {
                 getCurrent(userInput);
                 $("#searchInput").val("");
                 storeCities();
-                renderButtons();
+            } else {
+                return;
             }
 
             if(savedCities.length > 9){
                 savedCities.shift();
             }
+            storeCities(); 
+            renderButtons();
         });
     }
-    
-    
+
 });
