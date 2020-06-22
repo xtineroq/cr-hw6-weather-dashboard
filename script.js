@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     var savedCities = [];
-    var userLocation;
+    var userLocation = "";
     var APIKey = "2c541277b1985e721204cdf16d04a930";
 
     // Call Functions
@@ -12,7 +12,7 @@ $(document).ready(function() {
     //pull saved cities from local storage
     function initialize() {
         savedCities = JSON.parse(localStorage.getItem("cities"));
-
+        
         if (savedCities) {
             //get the last city searched and display it
             userLocation = savedCities[savedCities.length - 1];
@@ -29,7 +29,11 @@ $(document).ready(function() {
     }
 
     //sets localStorage item to savedCities array 
-    function storeCities() {
+    function storeCities(location) {
+        if (savedCities === null) {
+            savedCities = [location];
+        }
+
         localStorage.setItem("cities", JSON.stringify(savedCities));
         renderButtons();
     }
@@ -74,10 +78,8 @@ $(document).ready(function() {
 
         $.ajax({
             url: queryURL,
-            method: "GET"
-
+            method: "GET",
         }).then(function(response) {
-
             // fetch icon for Today's Weather
             var iconURL = "https://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png";
             $("#todayIcon").attr("src", iconURL);
@@ -179,7 +181,7 @@ $(document).ready(function() {
     
             //get the value from the Search field
             var userInput = $("#searchInput").val().trim();
-    
+
             if (userInput !== "") {
                 clearForecast();
                 
@@ -188,8 +190,6 @@ $(document).ready(function() {
                 getCurrent(userInput);
                 $("#searchInput").val("");
                 storeCities();
-            } else {
-                return;
             }
 
             if(savedCities.length > 9){
