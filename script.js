@@ -110,9 +110,9 @@ $(document).ready(function() {
                 var bgColour;
                 if (UVI <= 3) {
                     bgColour = "green";
-                } else if (UVI > 3 || UVI <= 6) {
+                } else if (UVI > 3 && UVI <= 6) {
                     bgColour = "yellow";
-                } else if (UVI > 6 || UVI <= 8) {
+                } else if (UVI > 6 && UVI <= 8) {
                     bgColour = "orange";
                 } else {
                     bgColour = "red";
@@ -133,7 +133,7 @@ $(document).ready(function() {
             url: queryURL,
             method: "GET"
         }).then(function(response) {
-
+            console.log(response);
             // create container for forecast cards
             var forecastRow = $("<div>").attr("class", "row forecast");
             $("#wForecast").append(forecastRow);
@@ -192,7 +192,7 @@ $(document).ready(function() {
                 storeCities();
             }
 
-            if(savedCities.length > 9){
+            if(savedCities.length > 10){
                 savedCities.shift();
             }
             storeCities(); 
