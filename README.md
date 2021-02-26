@@ -1,5 +1,4 @@
-# cr-hw6-weather-dashboard
-Monash University Bootcamp Assignment: Weather Dashboard
+# Weather Dashboard
 
 ## User Story
 
