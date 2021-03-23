@@ -36,4 +36,4 @@ If user's searches reach more than 10, it will remove the first result from the 
 
 ![image-weather-dashboard](assets/WeatherDashboard.png)
 
-Link to Deployed Application: https://xtineroq.github.io/cr-hw6-weather-dashboard/
+Link to Deployed Application: https://xtineroq.github.io/weather-dashboard/
